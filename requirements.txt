@@ -1,0 +1,6 @@
+autogen
+streamlit
+streamlit-option-menu
+streamlit_lottie
+groq
+scikit-learn
