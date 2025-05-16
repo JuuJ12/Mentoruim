@@ -5,3 +5,4 @@ streamlit_lottie
 groq
 scikit-learn
 langchain
+langchain-groq
