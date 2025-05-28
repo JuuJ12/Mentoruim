@@ -129,39 +129,9 @@ paginas = st.navigation({
 
 paginas.run()
 
-logins_registro = st.Page(
-    page="paginas/tela_login_e_cadastro.py",
-    title="Login e Registro",
-    icon='🔐',
-    default=True
-)
-
-
-pag1 = st.Page(
-    page= "paginas/page_1.py",
-    title="Iniciando a Jornada",
-    icon='🧙‍♂️',
-)
-
-pag2 = st.Page(
-    page= "paginas/page_2.py",
-    title="Alto Conselho do Mentorium",
-
-)
-
-paginas = st.navigation({
-    "Jornada": [pag1],
-    "Àgora": [pag2],
-})
-    }
-
-    icon='🧙‍♂️'
-
-)
-
-paginas = st.navigation({
-    "Jornada": [pag1],
-    "Àgora": [pag2],
-})
-
-paginas.run()
+# logins_registro = st.Page(
+#     page="paginas/tela_login_e_cadastro.py",
+#     title="Login e Registro",
+#     icon='🔐',
+#     default=True
+# )

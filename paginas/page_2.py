@@ -1,7 +1,7 @@
 import streamlit as st
 
-if "pagina" not in st.session_state or st.session_state.pagina != "principal":
-    st.switch_page("paginas/tela_login_e_cadastro.py")
+# if "pagina" not in st.session_state or st.session_state.pagina != "principal":
+#     st.switch_page("paginas/tela_login_e_cadastro.py")
 
 from Agents.conselho_dos_magos import chat
 from Agents.conselho_dos_magos import respostass
