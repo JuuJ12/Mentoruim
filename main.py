@@ -5,14 +5,9 @@ import os
 from dotenv import load_dotenv  
 import os  
 from groq import Groq  
-
+from auth.auth import exibir_tela_login_registro
 
 load_dotenv()
-
-
-client = Groq(
-    api_key=os.getenv("GROQ_API_KEY")
-)
 
 st.set_page_config(
     page_title='Mentorium',
@@ -24,6 +19,8 @@ st.set_page_config(
 if 'autenticado' not in st.session_state:
     st.session_state.autenticado = False
     st.session_state.usuario = None
+
+exibir_tela_login_registro()
 
 
 def verificar_login(usuario, senha):
@@ -101,7 +98,10 @@ if not st.session_state.autenticado:
 
 
 st.sidebar.text('Mentorium')
-st.sidebar.success(f"Bem-vindo, {st.session_state.usuario}!")
+if st.session_state.get('usuario'):
+    st.sidebar.success(f"Bem-vindo, {st.session_state.usuario}!")
+else:
+    st.sidebar.info("Usuário não identificado.")
 
 if st.sidebar.button("Logout"):
     st.session_state.autenticado = False
