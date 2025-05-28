@@ -4,3 +4,7 @@ streamlit-option-menu
 streamlit_lottie
 groq
 scikit-learn
+langchain
+langchain-groq
+streamlit-authenticator
+bcrypt
