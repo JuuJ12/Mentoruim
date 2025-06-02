@@ -7,7 +7,7 @@ load_dotenv()
 
 # Inicialize o modelo
 llamaChatModel = ChatGroq(
-    model="llama3-70b-8192",
+    model="llama-3.3-70b-versatile",
     api_key=os.getenv("GROQ_API_KEY"),
     temperature=0.5,
 )
