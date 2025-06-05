@@ -7,8 +7,9 @@ load_dotenv()
 
 # Inicialize o modelo
 llamaChatModel = ChatGroq(
-    model="llama3-70b-8192",
-    api_key=os.getenv("GROQ_API_KEY")
+    model="llama-3.3-70b-versatile",
+    api_key=os.getenv("GROQ_API_KEY"),
+    temperature=0.5,
 )
 
 def chat_bot():
@@ -17,7 +18,7 @@ def chat_bot():
     # Histórico de mensagens na sessão
     if "messages" not in st.session_state:
         st.session_state.messages = [
-            {"role": "system", "content": "Você é um mago supremo que me guiará na minha jornada."}
+            {"role": "system", "content": "Você é um mago supremo que guiará o usuário na jornada dele. Fale de forma sábia e amigável."}
         ]
 
     # Caixa de entrada do usuário

@@ -4,6 +4,7 @@ import json
 import os
 import re
 import time
+from .auth_firebase import cadastro, login
 
 
 USUARIOS_FILE = 'usuarios.json'
