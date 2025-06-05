@@ -15,6 +15,15 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+css_file_path = "style/style.css"
+try:
+    with open(css_file_path, encoding="utf-8") as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+except FileNotFoundError:
+    st.error(f"Erro: O arquivo CSS '{css_file_path}' não foi encontrado. Verifique o caminho.")
+except UnicodeDecodeError:
+    st.error(f"Erro de codificação ao ler o arquivo CSS '{css_file_path}'. Verifique se ele está salvo como UTF-8.")
+
 
 if 'autenticado' not in st.session_state:
     st.session_state.autenticado = False

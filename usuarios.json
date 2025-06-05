@@ -26,5 +26,9 @@
     "dt2@gmail.com": {
         "nome_completo": "dt2",
         "senha": "$2b$12$Av1iEEdnlwgqJiLr2bujKOhOU2uZ/EWRvxdm5jFDIElZNn2Zm41Hu"
+    },
+    "testecadastro@gmail.com": {
+        "nome_completo": "testando novo cadastro",
+        "senha": "$2b$12$0xqHJj.bPUgdp1cGjkaAxuHK7GrRD0k/yUn8k2gMxZ.Epn1tcBJJe"
     }
 }

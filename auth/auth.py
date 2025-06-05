@@ -140,7 +140,7 @@ def exibir_tela_login_registro():
     
     if st.session_state.get('autenticado', False):
         return
-    
+
     if 'active_tab' not in st.session_state:
         st.session_state.active_tab = "Login"
     
@@ -170,6 +170,13 @@ def exibir_tela_login_registro():
                 
                 email_login = st.text_input("E-mail", key="login_email")
                 senha_login = st.text_input("Senha", type="password", key="login_senha")
+                # --- LINHA PARA O LINK "ESQUECI MINHA SENHA" ---
+                st.markdown(
+                    '<div class="forgot-password-link">'
+                    '<a href="URL_DA_SUA_PAGINA_DE_RESET_DE_SENHA_AQUI" target="_self">Esqueci minha senha</a>'
+                    '</div>',
+                    unsafe_allow_html=True
+                )
                 enviar_login = st.form_submit_button("Entrar")
                 
                 if enviar_login:
@@ -194,95 +201,96 @@ def exibir_tela_login_registro():
                         st.error("E-mail ou senha incorretos. As runas não reconhecem esta combinação.")
         
         with tab_registro:
-            st.subheader("Inscreva-se no Mentorium")
-            
-            
-            nome_completo_reg = st.text_input("Nome Completo", 
-                                            value=st.session_state.registration_inputs["nome"], 
-                                            key="reg_nome")
-            if "nome" in st.session_state.registration_errors:
-                st.error(st.session_state.registration_errors["nome"])
-
-            email_reg = st.text_input("E-mail de Invocação", 
-                                    value=st.session_state.registration_inputs["email"], 
-                                    key="reg_email",
-                                    help=f"Domínios permitidos: {', '.join(ALLOWED_DOMAINS)}")
-            if "email" in st.session_state.registration_errors:
-                st.error(st.session_state.registration_errors["email"])
-
-            senha_reg = st.text_input("Senha Arcana", type="password", 
-                                    value=st.session_state.registration_inputs["senha"], 
-                                    key="reg_senha",
-                                    help=f"Mínimo {MIN_PASSWORD_LENGTH} caracteres.")
-            if "senha" in st.session_state.registration_errors:
-                st.error(st.session_state.registration_errors["senha"])
-
-            confirmar_senha_reg = st.text_input("Confirmar Senha Arcana", type="password", 
-                                                value=st.session_state.registration_inputs["conf_senha"],
-                                                key="reg_conf_senha")
-            if "conf_senha" in st.session_state.registration_errors:
-                st.error(st.session_state.registration_errors["conf_senha"])
-
-            
-            st.session_state.registration_inputs["nome"] = nome_completo_reg
-            st.session_state.registration_inputs["email"] = email_reg
-            st.session_state.registration_inputs["senha"] = senha_reg
-            st.session_state.registration_inputs["conf_senha"] = confirmar_senha_reg
-
-            if st.button("Concluir Cadastro", key="btn_concluir_cadastro"):
-                st.session_state.registration_errors = {} 
-
-                
-                if not nome_completo_reg.strip():
-                    st.session_state.registration_errors["nome"] = "Até mesmo os magos precisam de um nome... Informe como deseja ser chamado em nossos grimórios."
-                
-                email_valido, msg_email = is_valid_email_format(email_reg)
-                if not email_valido:
-                    st.session_state.registration_errors["email"] = msg_email
-                
-                senha_valida, msg_senha = is_strong_password(senha_reg) 
-                if not senha_valida:
-                    st.session_state.registration_errors["senha"] = msg_senha
-                elif senha_reg.strip() != confirmar_senha_reg.strip(): 
-                     st.session_state.registration_errors["conf_senha"] = "As senhas não se alinham como as constelações."
+            with st.form("register_form"):
+                st.subheader("Inscreva-se no Mentorium")
                 
                 
-                if not nome_completo_reg.strip() and not email_reg.strip() and not senha_reg: 
+                nome_completo_reg = st.text_input("Nome Completo", 
+                                                value=st.session_state.registration_inputs["nome"], 
+                                                key="reg_nome")
+                if "nome" in st.session_state.registration_errors:
+                    st.error(st.session_state.registration_errors["nome"])
 
-                    if not st.session_state.registration_errors.get("nome"):
-                         st.session_state.registration_errors["nome"] = "O nome completo é necessário."
-                    if not st.session_state.registration_errors.get("email"):
-                         st.session_state.registration_errors["email"] = "O e-mail é necessário."
-                    if not st.session_state.registration_errors.get("senha"):
-                         st.session_state.registration_errors["senha"] = "A senha é necessária."
+                email_reg = st.text_input("E-mail de Invocação", 
+                                        value=st.session_state.registration_inputs["email"], 
+                                        key="reg_email",
+                                        help=f"Domínios permitidos: {', '.join(ALLOWED_DOMAINS)}")
+                if "email" in st.session_state.registration_errors:
+                    st.error(st.session_state.registration_errors["email"])
 
+                senha_reg = st.text_input("Senha Arcana", type="password", 
+                                        value=st.session_state.registration_inputs["senha"], 
+                                        key="reg_senha",
+                                        help=f"Mínimo {MIN_PASSWORD_LENGTH} caracteres.")
+                if "senha" in st.session_state.registration_errors:
+                    st.error(st.session_state.registration_errors["senha"])
 
-                if not st.session_state.registration_errors:
+                confirmar_senha_reg = st.text_input("Confirmar Senha Arcana", type="password", 
+                                                    value=st.session_state.registration_inputs["conf_senha"],
+                                                    key="reg_conf_senha")
+                if "conf_senha" in st.session_state.registration_errors:
+                    st.error(st.session_state.registration_errors["conf_senha"])
+
+                
+                st.session_state.registration_inputs["nome"] = nome_completo_reg
+                st.session_state.registration_inputs["email"] = email_reg
+                st.session_state.registration_inputs["senha"] = senha_reg
+                st.session_state.registration_inputs["conf_senha"] = confirmar_senha_reg
+
+                if st.form_submit_button("Concluir Cadastro"):
+                    st.session_state.registration_errors = {} 
+
                     
-                    with st.spinner("O Conselho está inscrevendo teu nome nos registros sagrados..."):
-                        
-                        time.sleep(1)
-                        
-                        
-                        status_code, message = registrar_usuario(nome_completo_reg, email_reg, senha_reg)
+                    if not nome_completo_reg.strip():
+                        st.session_state.registration_errors["nome"] = "Até mesmo os magos precisam de um nome... Informe como deseja ser chamado em nossos grimórios."
                     
-                    if status_code == "success":
-                        st.success(message) 
-                        time.sleep(2)
-                        st.session_state.show_login_after_register = True
-                        st.session_state.active_tab = "Login" 
-                        st.session_state.registration_inputs = {"nome": "", "email": "", "senha": "", "conf_senha": ""} # Limpar form
-                        st.session_state.registration_errors = {}
+                    email_valido, msg_email = is_valid_email_format(email_reg)
+                    if not email_valido:
+                        st.session_state.registration_errors["email"] = msg_email
+                    
+                    senha_valida, msg_senha = is_strong_password(senha_reg) 
+                    if not senha_valida:
+                        st.session_state.registration_errors["senha"] = msg_senha
+                    elif senha_reg.strip() != confirmar_senha_reg.strip(): 
+                        st.session_state.registration_errors["conf_senha"] = "As senhas não se alinham como as constelações."
+                    
+                    
+                    if not nome_completo_reg.strip() and not email_reg.strip() and not senha_reg: 
+
+                        if not st.session_state.registration_errors.get("nome"):
+                            st.session_state.registration_errors["nome"] = "O nome completo é necessário."
+                        if not st.session_state.registration_errors.get("email"):
+                            st.session_state.registration_errors["email"] = "O e-mail é necessário."
+                        if not st.session_state.registration_errors.get("senha"):
+                            st.session_state.registration_errors["senha"] = "A senha é necessária."
+
+
+                    if not st.session_state.registration_errors:
+                        
+                        with st.spinner("O Conselho está inscrevendo teu nome nos registros sagrados..."):
+                            
+                            time.sleep(1)
+                            
+                            
+                            status_code, message = registrar_usuario(nome_completo_reg, email_reg, senha_reg)
+                        
+                        if status_code == "success":
+                            st.success(message) 
+                            time.sleep(2)
+                            st.session_state.show_login_after_register = True
+                            st.session_state.active_tab = "Login" 
+                            st.session_state.registration_inputs = {"nome": "", "email": "", "senha": "", "conf_senha": ""} # Limpar form
+                            st.session_state.registration_errors = {}
+                            st.rerun()
+                        elif status_code == "email_exists": 
+                            st.error(message)
+                            
+                        elif status_code == "save_error": 
+                            st.error(message) 
+                            
+                        else: 
+                            st.error(f"Um contratempo mágico ocorreu: {message}")
+                    else:
                         st.rerun()
-                    elif status_code == "email_exists": 
-                        st.error(message)
-                        
-                    elif status_code == "save_error": 
-                        st.error(message) 
-                        
-                    else: 
-                        st.error(f"Um contratempo mágico ocorreu: {message}")
-                else:
-                    st.rerun()
         
             st.stop()
