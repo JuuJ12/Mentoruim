@@ -62,10 +62,3 @@ paginas = st.navigation({
 })
 
 paginas.run()
-
-# logins_registro = st.Page(
-#     page="paginas/tela_login_e_cadastro.py",
-#     title="Login e Registro",
-#     icon='🔐',
-#     default=True
-# )

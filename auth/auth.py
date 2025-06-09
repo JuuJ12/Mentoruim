@@ -1,10 +1,9 @@
 import streamlit as st
-# import bcrypt # Não será mais necessário
 import json
 import os
 import re
 import time
-from .auth_firebase import cadastro, login # Importa os métodos do Firebase
+from .auth_firebase import cadastro, login
 
 # USUARIOS_FILE = 'usuarios.json' # Não será mais necessário
 ALLOWED_DOMAINS = ["gmail.com", "outlook.com", "hotmail.com"] 
@@ -51,27 +50,17 @@ def sanitize_full_name(name_str):
         truncated = True 
     return name_str, truncated
 
-# As funções load_users e save_users não são mais necessárias
-# def load_users():
-#     ...
-# def save_users(users_data):
-#     ...
-
-
 def verificar_login(email, senha):
     """
     Verifica as credenciais do usuário usando o método login do Firebase.
     """
     email = email.strip() 
     
-    # Chama o método login do auth_firebase.py
     autenticado, message = login(email, senha) 
     
     if autenticado:
-        # O 'message' aqui é o email do usuário logado, conforme auth_firebase.login
         return True, message 
     else:
-        # 'message' contém a mensagem de erro do Firebase
         return False, message
 
 
@@ -91,11 +80,9 @@ def registrar_usuario(nome_completo, email, senha):
         return "validation_error", "O nome completo não pode ser vazio."
 
     senha_processada = senha.strip()
-    # Mantemos a validação local da força da senha antes de enviar ao Firebase
     if not is_strong_password(senha_processada)[0]:
         return "validation_error", is_strong_password(senha_processada)[1]
-
-    # Chama o método cadastro do auth_firebase.py
+    
     success, message = cadastro(email, senha_processada)
 
     if success:

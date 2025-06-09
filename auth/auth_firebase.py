@@ -1,4 +1,3 @@
-# auth/auth_firebase.py
 import pyrebase 
 
 firebaseConfig = {
