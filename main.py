@@ -5,7 +5,7 @@ import os
 from dotenv import load_dotenv  
 import os  
 from groq import Groq  
-from auth.auth import exibir_tela_login_registro
+from auth.authentication import exibir_tela_login_registro
 
 load_dotenv()
 
