@@ -13,3 +13,4 @@ oauth2client
 pycryptodome
 gcloud
 google-cloud-storage
+setuptools
