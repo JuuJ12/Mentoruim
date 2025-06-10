@@ -11,3 +11,5 @@ bcrypt
 pyrebase4
 oauth2client
 pycryptodome
+gcloud
+google-cloud-storage

@@ -54,3 +54,5 @@ def login(email: str, senha: str) -> tuple[bool, str | None]:
         else:
             print(f"Erro inesperado ao fazer login: {e}")
             return False, None
+
+print(cadastro('exemplo@dominio.com', 'senha123'))
