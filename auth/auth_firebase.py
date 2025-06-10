@@ -1,14 +1,16 @@
 import pyrebase 
-
+import os
+from dotenv import load_dotenv
+load_dotenv()
 firebaseConfig = {
-    'apiKey': "AIzaSyBk1drWLWXFgotq4-BJLyAYSNiPEcSC9TQ",
-    'authDomain': "mentorium-41748.firebaseapp.com",
-    'projectId': "mentorium-41748",
-    'storageBucket': "mentorium-41748.firebasestorage.app",
-    'databaseURL': "https://mentorium-41748-default-rtdb.firebaseio.com",
-    'messagingSenderId': "688533356703",
-    'appId': "1:688533356703:web:1331886027db349ba8e2aa",
-    'measurementId': "G-5W8GZCZVD1"
+    'apiKey': os.getenv("FIREBASE_API_KEY"),
+    'authDomain': os.getenv("AUTH_DOMAIN"),
+    'projectId': os.getenv("PROJECT_ID"),
+    'storageBucket': os.getenv("STORAGE_BUCKET"),
+    'databaseURL': os.getenv("DATABASE_URL"),
+    'messagingSenderId': os.getenv("MESSAGING_SENDER_ID"),
+    'appId': os.getenv("APP_ID"),
+    'measurementId': os.getenv("MEASUREMENT_ID")
 }
 
 def cadastro(email: str, senha: str) -> tuple[bool, str]:

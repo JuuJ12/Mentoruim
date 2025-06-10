@@ -8,4 +8,6 @@ langchain
 langchain-groq
 streamlit-authenticator
 bcrypt
-pyrebase
+pyrebase4
+oauth2client
+pycryptodome
