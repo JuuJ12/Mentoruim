@@ -132,8 +132,8 @@ def exibir_tela_login_registro():
                 del st.session_state.show_login_after_register 
 
             with st.form("login_form"):
-                email_login = st.text_input("E-mail", key="login_email")
-                senha_login = st.text_input("Senha", type="password", key="login_senha")
+                email_login = st.text_input("Selo Mágico", key="login_email")
+                senha_login = st.text_input("Palavra-Passe", type="password", key="login_senha")
                 st.markdown(
                     '<div class="forgot-password-link">'
                     '<a href="URL_DA_SUA_PAGINA_DE_RESET_DE_SENHA_AQUI" target="_self">Esqueci minha senha</a>'
