@@ -3,7 +3,9 @@ import json
 import os
 import re
 import time
+from streamlit_lottie import st_lottie
 from .auth_firebase import cadastro, login
+from streamlit.components.v1 import html
 
 # USUARIOS_FILE = 'usuarios.json' # Não será mais necessário
 ALLOWED_DOMAINS = ["gmail.com", "outlook.com", "hotmail.com"] 
@@ -106,11 +108,16 @@ def registrar_usuario(nome_completo, email, senha):
         else: # Erro geral do Firebase
             return "firebase_error", message
 
+def load_lottiefile(filepath: str):
+    with open(filepath, "r", encoding="utf-8") as f:
+        return json.load(f)
+
 def exibir_tela_login_registro():
     """Exibe a tela de login ou registro se o usuário não estiver autenticado."""
     
     if st.session_state.get('autenticado', False):
         return
+    
 
     if 'active_tab' not in st.session_state:
         st.session_state.active_tab = "Login"
@@ -255,5 +262,19 @@ def exibir_tela_login_registro():
                             else: # Catch-all para outros erros inesperados
                                 st.error(f"Um contratempo mágico ocorreu: {message}")
                             st.rerun() # Reruns para exibir os erros nos campos ou globalmente
+    
+    try:
+        caminho_do_lottie = "pictures/aventureiros.json"
+        lottie_data = load_lottiefile(caminho_do_lottie)
+    except Exception as e:
+        print(f"Aviso: Não foi possível carregar a animação Lottie: {e}")
+        lottie_data = None
 
+    if lottie_data:
+        left_column, right_column  = st.columns([2, 1])
+        with left_column:
+            st.write("")
+        with right_column:
+            st_lottie(lottie_data, height=150, width=400, key="corner_lottie2")
+        
         st.stop()
