@@ -55,4 +55,22 @@ def login(email: str, senha: str) -> tuple[bool, str | None]:
             print(f"Erro inesperado ao fazer login: {e}")
             return False, None
 
-print(cadastro('exemplo@dominio.com', 'senha123'))
+
+def recuperar_senha(email: str) -> tuple[bool, str]:
+    """
+    Envia um e-mail de recuperação de senha para o usuário.
+    Retorna True e uma mensagem de sucesso em caso de sucesso,
+    ou False e uma mensagem de erro.
+    """
+    firebase = pyrebase.initialize_app(firebaseConfig)
+    auth = firebase.auth()
+    try:
+        auth.send_password_reset_email(email)
+        return True, "E-mail de recuperação enviado com sucesso!"
+    except Exception as e:
+        error_message = str(e)
+        if "EMAIL_NOT_FOUND" in error_message:
+            return False, "Este e-mail não está registrado no grimório."
+        else:
+            print(f"Erro inesperado ao enviar e-mail de recuperação: {e}")
+            return False, f"Ocorreu um erro arcano ao tentar enviar o e-mail: {error_message}"
