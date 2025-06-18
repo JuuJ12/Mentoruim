@@ -11,7 +11,7 @@ load_dotenv()
 
 st.set_page_config(
     page_title='Mentorium',
-    layout="centered",
+    layout="wide",
     initial_sidebar_state="expanded",
 )
 

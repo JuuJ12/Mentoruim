@@ -14,3 +14,4 @@ pycryptodome
 gcloud
 google-cloud-storage
 setuptools
+streamlit-lottie
