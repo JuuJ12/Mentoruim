@@ -6,6 +6,7 @@ import time
 from streamlit_lottie import st_lottie
 from .auth_firebase import cadastro, login
 from streamlit.components.v1 import html
+from paginas.recuperacao_senha import mostrar_recuperacao_senha
 
 # USUARIOS_FILE = 'usuarios.json' # Não será mais necessário
 ALLOWED_DOMAINS = ["gmail.com", "outlook.com", "hotmail.com"] 
@@ -141,12 +142,6 @@ def exibir_tela_login_registro():
             with st.form("login_form"):
                 email_login = st.text_input("Selo Mágico", key="login_email")
                 senha_login = st.text_input("Palavra-Passe", type="password", key="login_senha")
-                st.markdown(
-                    '<div class="forgot-password-link">'
-                    '<a href="URL_DA_SUA_PAGINA_DE_RESET_DE_SENHA_AQUI" target="_self">Esqueci minha senha</a>'
-                    '</div>',
-                    unsafe_allow_html=True
-                )
                 enviar_login = st.form_submit_button("Entrar")
                 
                 if enviar_login:
@@ -171,7 +166,10 @@ def exibir_tela_login_registro():
                     else:
                         # Exibe a mensagem de erro vinda do Firebase/verificar_login
                         st.error(message)
-        
+            
+            with st.expander("Esqueci minha senha", expanded=False):
+                    mostrar_recuperacao_senha()
+
         with tab_registro:
             with st.form("register_form"):
                 st.subheader("Inscreva-se no Mentorium")

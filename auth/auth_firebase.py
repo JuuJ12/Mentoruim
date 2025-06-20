@@ -74,3 +74,4 @@ def recuperar_senha(email: str) -> tuple[bool, str]:
         else:
             print(f"Erro inesperado ao enviar e-mail de recuperação: {e}")
             return False, f"Ocorreu um erro arcano ao tentar enviar o e-mail: {error_message}"
+        
