@@ -5,7 +5,7 @@ from langchain_groq import ChatGroq
 
 load_dotenv()
 
-image_url = "https://i.postimg.cc/BnT8fsYy/livro-fundo.png"
+image_url = "https://i.postimg.cc/KzPWZrFk/Gemini-Generated-Image-zbzj3kzbzj3kzbzj.png"
 
 page_bg_img = f"""
 <style>
