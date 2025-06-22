@@ -15,3 +15,5 @@ gcloud
 google-cloud-storage
 setuptools
 streamlit-lottie
+requests-toolbelt
+urllib3
