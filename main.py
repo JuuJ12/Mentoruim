@@ -2,6 +2,7 @@ import streamlit as st
 import bcrypt
 import json
 import os
+import time
 from dotenv import load_dotenv  
 import os  
 from groq import Groq  
@@ -30,6 +31,22 @@ if 'autenticado' not in st.session_state:
     st.session_state.usuario = None
 
 exibir_tela_login_registro()
+
+# Mostra mensagem de boas-vindas após login bem-sucedido
+if st.session_state.get('login_sucesso', False):
+    # Cria um container vazio para a mensagem
+    mensagem_container = st.empty()
+    
+    # Mostra a mensagem de sucesso
+    with mensagem_container.container():
+        st.success(f"🎉 Bem-vindo ao Mentorium, {st.session_state.usuario}! Sua jornada mágica começa agora!")
+    
+    # Aguarda 3 segundos e remove a mensagem
+    time.sleep(3)
+    mensagem_container.empty()
+    
+    # Remove a flag após mostrar a mensagem
+    del st.session_state.login_sucesso
 
 st.sidebar.text('Mentorium')
 if st.session_state.get('usuario'):

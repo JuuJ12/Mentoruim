@@ -119,7 +119,6 @@ def exibir_tela_login_registro():
     if st.session_state.get('autenticado', False):
         return
     
-
     if 'active_tab' not in st.session_state:
         st.session_state.active_tab = "Login"
     
@@ -145,11 +144,22 @@ def exibir_tela_login_registro():
                 enviar_login = st.form_submit_button("Entrar")
                 
                 if enviar_login:
-                    # Chama a função de login que agora usa o Firebase
-                    autenticado, message = verificar_login(email_login, senha_login)
+                    with st.spinner("Verificando suas credenciais arcanas..."):
+                        # Chama a função de login que agora usa o Firebase
+                        autenticado, message = verificar_login(email_login, senha_login)
+                        
+                        if autenticado:
+                            # Mostra spinner de carregamento pós-login
+                            time.sleep(1)  # Pequena pausa para melhor experiência
+                            
                     if autenticado:
+                        with st.spinner("Bem-vindo ao Mentorium! Preparando sua jornada..."):
+                            time.sleep(2)  # Simula carregamento da aplicação
+                            
                         st.session_state.autenticado = True
                         st.session_state.usuario = message # O message agora é o email do usuário
+                        st.session_state.login_sucesso = True  # Flag para mostrar mensagem de sucesso
+                        
                         # Limpa estados de sessão após login bem-sucedido
                         keys_to_delete = [
                             'active_tab', 
