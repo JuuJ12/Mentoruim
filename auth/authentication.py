@@ -33,10 +33,26 @@ def is_strong_password(password_str):
     """Verifica a força da senha."""
     if not password_str:
         return False, "A senha não pode ser um feitiço vazio."
+    
+    # Verifica se há emojis na senha
+    emoji_pattern = re.compile(
+        "["
+        "\U0001F600-\U0001F64F"  # emoticons
+        "\U0001F300-\U0001F5FF"  # symbols & pictographs
+        "\U0001F680-\U0001F6FF"  # transport & map symbols
+        "\U0001F1E0-\U0001F1FF"  # flags (iOS)
+        "\U00002702-\U000027B0"  # dingbats
+        "\U000024C2-\U0001F251"  # enclosed characters
+        "]+", flags=re.UNICODE
+    )
+    
+    if emoji_pattern.search(password_str):
+        return False, "As runas mágicas não devem conter símbolos encantados (emojis). Use apenas letras, números e símbolos tradicionais."
+    
     # A validação de comprimento aqui ainda é útil como uma verificação de frontend,
     # mesmo que o Firebase também valide.
     if len(password_str) < MIN_PASSWORD_LENGTH:
-        return False, f"Tua senha é frágil como pergaminho molhado. Fortaleça-a com mais símbolos místicos (mín. {MIN_PASSWORD_LENGTH} runas)." # CT-AUT-14
+        return False, "A Palavra-Passe deve conter pelo menos 6 runas mágicas." # CT-AUT-14
     return True, ""
 
 def sanitize_full_name(name_str):
@@ -140,46 +156,74 @@ def exibir_tela_login_registro():
 
             with st.form("login_form"):
                 email_login = st.text_input("Selo Mágico", key="login_email")
-                senha_login = st.text_input("Palavra-Passe", type="password", key="login_senha")
+                
+                # Campo de senha com controle de limpeza
+                if st.session_state.get('limpar_senha_login', False):
+                    senha_login = st.text_input("Palavra-Passe", type="password", key="login_senha_temp", value="")
+                else:
+                    senha_login = st.text_input("Palavra-Passe", type="password", key="login_senha")
+                
+                # Botão sempre habilitado no formulário
                 enviar_login = st.form_submit_button("Entrar")
                 
+                # Mostra mensagem de erro se houver
+                if st.session_state.get('mensagem_erro_login'):
+                    st.error(st.session_state.mensagem_erro_login)
+                
                 if enviar_login:
+                    # Limpa mensagens de erro anteriores
+                    if 'mensagem_erro_login' in st.session_state:
+                        del st.session_state.mensagem_erro_login
+                    
+                    # Reseta flag de limpeza se existir
+                    if st.session_state.get('limpar_senha_login', False):
+                        st.session_state.limpar_senha_login = False
                     # Validação de campos vazios
                     if not email_login.strip() or not senha_login.strip():
-                        st.error("Por favor, complete o pergaminho antes de prosseguir, jovem aprendiz.")
+                        st.session_state.mensagem_erro_login = "Por favor, complete o pergaminho antes de prosseguir, jovem aprendiz."
+                        st.rerun()
                     else:
-                        with st.spinner("Verificando suas credenciais arcanas..."):
-                            # Chama a função de login que agora usa o Firebase
-                            autenticado, message = verificar_login(email_login, senha_login)
-                            
-                            if autenticado:
-                                # Mostra spinner de carregamento pós-login
-                                time.sleep(1)  # Pequena pausa para melhor experiência
-                                
-                        if autenticado:
-                            with st.spinner("Bem-vindo ao Mentorium! Preparando sua jornada..."):
-                                time.sleep(2)  # Simula carregamento da aplicação
-                                
-                            st.session_state.autenticado = True
-                            st.session_state.usuario = message # O message agora é o email do usuário
-                            st.session_state.login_sucesso = True  # Flag para mostrar mensagem de sucesso
-                            
-                            # Limpa estados de sessão após login bem-sucedido
-                            keys_to_delete = [
-                                'active_tab', 
-                                'registration_errors', 
-                                'registration_inputs', 
-                                'show_login_after_register',
-                                'login_email', # Limpa o campo de email do login
-                                'login_senha'  # Limpa o campo de senha do login
-                            ]
-                            for key in keys_to_delete:
-                                if key in st.session_state:
-                                    del st.session_state[key]
+                        # Validação do formato do email antes de tentar login
+                        email_valido, msg_email = is_valid_email_format(email_login)
+                        if not email_valido:
+                            st.session_state.mensagem_erro_login = "Este selo mágico não é reconhecido. Use o formato: aprendiz@reino.com"
                             st.rerun()
                         else:
-                            # Exibe a mensagem de erro vinda do Firebase/verificar_login
-                            st.error(message)
+                            with st.spinner("Verificando suas credenciais arcanas..."):
+                                # Chama a função de login que agora usa o Firebase
+                                autenticado, message = verificar_login(email_login, senha_login)
+                                
+                                if autenticado:
+                                    # Mostra spinner de carregamento pós-login
+                                    time.sleep(1)  # Pequena pausa para melhor experiência
+                                    
+                            if email_valido and autenticado:
+                                with st.spinner("Bem-vindo ao Mentorium! Preparando sua jornada..."):
+                                    time.sleep(2)  # Simula carregamento da aplicação
+                                    
+                                st.session_state.autenticado = True
+                                st.session_state.usuario = message # O message agora é o email do usuário
+                                st.session_state.login_sucesso = True  # Flag para mostrar mensagem de sucesso
+                                
+                                # Limpa estados de sessão após login bem-sucedido
+                                keys_to_delete = [
+                                    'active_tab', 
+                                    'registration_errors', 
+                                    'registration_inputs', 
+                                    'show_login_after_register',
+                                    'login_email', # Limpa o campo de email do login
+                                    'login_senha'  # Limpa o campo de senha do login
+                                ]
+                                for key in keys_to_delete:
+                                    if key in st.session_state:
+                                        del st.session_state[key]
+                                st.rerun()
+                            elif email_valido and not autenticado:
+                                # Define flag para limpar campo de senha na próxima execução
+                                st.session_state.limpar_senha_login = True
+                                # Armazena a mensagem de erro para exibir
+                                st.session_state.mensagem_erro_login = "Selo Mágico ou Palavra-Passe inválidos. Tente novamente ou inicie o Ritual de Recuperação."
+                                st.rerun()
             
             with st.expander("Esqueci minha senha", expanded=False):
                     mostrar_recuperacao_senha()
