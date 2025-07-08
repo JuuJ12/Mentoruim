@@ -1,6 +1,9 @@
 import pyrebase 
 import os
 from dotenv import load_dotenv
+import firebase_admin
+from firebase_admin import credentials, firestore
+
 load_dotenv()
 firebaseConfig = {
     'apiKey': os.getenv("FIREBASE_API_KEY"),
@@ -13,16 +16,24 @@ firebaseConfig = {
     'measurementId': os.getenv("MEASUREMENT_ID")
 }
 
-def cadastro(email: str, senha: str) -> tuple[bool, str]:
+if not firebase_admin._apps:
+    cred = credentials.Certificate("auth/firebase_key.json")
+    firebase_admin.initialize_app(cred)
+
+def cadastro(email: str, senha: str, nome: str) -> tuple[bool, str]:
     """
     Cadastra um novo usuário no Firebase Authentication usando Pyrebase.
+    Salva também o nome do usuário no Firestore.
     Retorna True e uma mensagem de sucesso em caso de sucesso,
     ou False e uma mensagem de erro.
     """
     firebase = pyrebase.initialize_app(firebaseConfig)
     auth = firebase.auth()
     try:
-        auth.create_user_with_email_and_password(email, senha)
+        user = auth.create_user_with_email_and_password(email, senha)
+        # Salva o nome no Firestore
+        db = firestore.client()
+        db.collection("users").document(email).set({"nome": nome, "email": email})
         return True, "Cadastro realizado com sucesso!"
     except Exception as e:
         error_message = str(e)
@@ -74,4 +85,5 @@ def recuperar_senha(email: str) -> tuple[bool, str]:
         else:
             print(f"Erro inesperado ao enviar e-mail de recuperação: {e}")
             return False, f"Ocorreu um erro arcano ao tentar enviar o e-mail: {error_message}"
-        
+
+print(cadastro('exemplos@dominio.com', 'senha123', 'Nome do Usuário'))

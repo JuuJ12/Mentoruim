@@ -7,11 +7,23 @@ from streamlit_lottie import st_lottie
 from .auth_firebase import cadastro, login
 from streamlit.components.v1 import html
 from paginas.recuperacao_senha import mostrar_recuperacao_senha
+from firebase_admin import firestore
+import firebase_admin
+from firebase_admin import credentials
 
 # USUARIOS_FILE = 'usuarios.json' # Não será mais necessário
 ALLOWED_DOMAINS = ["gmail.com", "outlook.com", "hotmail.com"] 
 MIN_PASSWORD_LENGTH = 6 
 MAX_NAME_LENGTH = 100 
+
+if not firebase_admin._apps:
+    try:
+        cred = credentials.Certificate("auth/firebase_key.json")
+        firebase_admin.initialize_app(cred)
+    except FileNotFoundError:
+        print("⚠️  Arquivo firebase_key.json não encontrado. Funcionalidade Firebase desabilitada.")
+    except Exception as e:
+        print(f"⚠️  Erro ao inicializar Firebase: {e}") 
 
 def is_valid_email_format(email_str):
     """Verifica o formato básico do e-mail e o domínio."""
@@ -78,6 +90,11 @@ def verificar_login(email, senha):
     autenticado, message = login(email, senha) 
     
     if autenticado:
+        # Busca o nome no Firestore
+        db = firestore.client()
+        doc = db.collection("users").document(email).get()
+        nome = doc.to_dict().get("nome") if doc.exists else ""
+        st.session_state["usuario_nome"] = nome
         return True, message 
     else:
         return False, message
@@ -102,7 +119,7 @@ def registrar_usuario(nome_completo, email, senha):
     if not is_strong_password(senha_processada)[0]:
         return "validation_error", is_strong_password(senha_processada)[1]
     
-    success, message = cadastro(email, senha_processada)
+    success, message = cadastro(email, senha_processada, nome_sanitizado)
 
     if success:
         # Se precisar, você pode usar o UID (se o pyrebase retornasse aqui,
@@ -135,6 +152,7 @@ def exibir_tela_login_registro():
     if st.session_state.get('autenticado', False):
         return
     
+
     if 'active_tab' not in st.session_state:
         st.session_state.active_tab = "Login"
     
@@ -203,8 +221,6 @@ def exibir_tela_login_registro():
                                     
                                 st.session_state.autenticado = True
                                 st.session_state.usuario = message # O message agora é o email do usuário
-                                st.session_state.login_sucesso = True  # Flag para mostrar mensagem de sucesso
-                                
                                 # Limpa estados de sessão após login bem-sucedido
                                 keys_to_delete = [
                                     'active_tab', 

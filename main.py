@@ -43,8 +43,10 @@ if st.session_state.get('login_sucesso', False):
     del st.session_state.login_sucesso
 
 st.sidebar.text('Mentorium')
-if st.session_state.get('usuario'):
-    st.sidebar.success(f"Bem-vindo, {st.session_state.usuario}!")
+if st.session_state.get('usuario_nome'):
+    st.sidebar.success(f"Bem-vindo, {st.session_state['usuario_nome']}!")
+elif st.session_state.get('usuario'):
+    st.sidebar.success(f"Bem-vindo, {st.session_state['usuario']}!")
 else:
     st.sidebar.info("Usuário não identificado.")
 

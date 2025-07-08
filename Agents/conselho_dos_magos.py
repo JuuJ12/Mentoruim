@@ -7,10 +7,14 @@ import numpy as np
 import random
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+import firebase_admin
+from firebase_admin import credentials, firestore
 
 load_dotenv()
 
-
+if not firebase_admin._apps:
+    cred = credentials.Certificate("auth/firebase_key.json")
+    firebase_admin.initialize_app(cred)
 
 defaults = {
     'funcao_agente1': '''Feiticeiro (Sorcerer), Usa magia de forma inata, como se fosse um dom natural ou herdado por linhagem mágica (ex: sangue de dragão). 
@@ -147,4 +151,56 @@ def chat(assunto):
 
         yield f"\n **{agente.name}** respondeu: {resposta}"
         state = next_state
+
+def salvar_mensagens_conselho(email, mensagens):
+    db = firestore.client()
+    db.collection("conselho_chats").document(email).set({"mensagens": mensagens})
+
+def carregar_mensagens_conselho(email):
+    db = firestore.client()
+    doc = db.collection("conselho_chats").document(email).get()
+    if doc.exists:
+        return doc.to_dict().get("mensagens", [])
+    else:
+        return []
+
+def conselho_dos_magos():
+    st.title("Conselho dos Magos 🧙‍♂️🧙‍♀️")
+    email_usuario = st.session_state.get("usuario")
+
+    if "conselho_messages" not in st.session_state:
+        if email_usuario:
+            st.session_state.conselho_messages = carregar_mensagens_conselho(email_usuario)
+            if not st.session_state.conselho_messages:
+                st.session_state.conselho_messages = [
+                    {"role": "system", "content": "Você está diante do conselho dos magos. Faça sua pergunta e receba respostas enigmáticas dos três magos."}
+                ]
+        else:
+            st.session_state.conselho_messages = [
+                {"role": "system", "content": "Você está diante do conselho dos magos. Faça sua pergunta e receba respostas enigmáticas dos três magos."}
+            ]
+
+    user_input = st.chat_input("Pergunte ao conselho:")
+
+    if user_input:
+        st.session_state.conselho_messages.append({"role": "user", "content": user_input})
+        respostas = []
+        for agente in agentes:
+            chat_result = agente.generate_reply(messages=[{"role": "user", "content": user_input}])
+            resposta = chat_result['content']
+            respostas.append({"role": agente.name, "content": resposta})
+            st.session_state.conselho_messages.append({"role": agente.name, "content": resposta})
+
+        # Salva as mensagens no Firestore
+        if email_usuario:
+            salvar_mensagens_conselho(email_usuario, st.session_state.conselho_messages)
+
+    # Exibe o histórico (pulando a mensagem system)
+    for msg in st.session_state.conselho_messages[1:]:
+        if msg["role"] == "user":
+            with st.chat_message('👤'):
+                st.markdown(f"**Você:** {msg['content']}")
+        else:
+            with st.chat_message('🧙‍♂️'):
+                st.markdown(f"**{msg['role']}:** {msg['content']}")
 
