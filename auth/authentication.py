@@ -10,6 +10,10 @@ from paginas.recuperacao_senha import mostrar_recuperacao_senha
 from firebase_admin import firestore
 import firebase_admin
 from firebase_admin import credentials
+from dotenv import load_dotenv
+
+# Carrega as variáveis de ambiente
+load_dotenv()
 
 # USUARIOS_FILE = 'usuarios.json' # Não será mais necessário
 ALLOWED_DOMAINS = ["gmail.com", "outlook.com", "hotmail.com"] 
@@ -18,10 +22,32 @@ MAX_NAME_LENGTH = 100
 
 if not firebase_admin._apps:
     try:
-        cred = credentials.Certificate("auth/firebase_key.json")
+        firebase_credentials = {
+            "type": os.getenv("FIREBASE_TYPE", "service_account"),
+            "project_id": os.getenv("FIREBASE_PROJECT_ID"),
+            "private_key_id": os.getenv("FIREBASE_PRIVATE_KEY_ID"),
+            "private_key": os.getenv("FIREBASE_PRIVATE_KEY").replace("\\n", "\n") if os.getenv("FIREBASE_PRIVATE_KEY") else None,
+            "client_email": os.getenv("FIREBASE_CLIENT_EMAIL"),
+            "client_id": os.getenv("FIREBASE_CLIENT_ID"),
+            "auth_uri": os.getenv("FIREBASE_AUTH_URI", "https://accounts.google.com/o/oauth2/auth"),
+            "token_uri": os.getenv("FIREBASE_TOKEN_URI", "https://oauth2.googleapis.com/token"),
+            "auth_provider_x509_cert_url": os.getenv("FIREBASE_AUTH_PROVIDER_X509_CERT_URL", "https://www.googleapis.com/oauth2/v1/certs"),
+            "client_x509_cert_url": os.getenv("FIREBASE_CLIENT_X509_CERT_URL"),
+            "universe_domain": os.getenv("FIREBASE_UNIVERSE_DOMAIN", "googleapis.com")
+        }
+        
+        # Verifica se as credenciais essenciais estão presentes
+        if not all([firebase_credentials["project_id"], firebase_credentials["private_key"], firebase_credentials["client_email"]]):
+            raise ValueError("Credenciais Firebase incompletas no arquivo .env")
+        
+        cred = credentials.Certificate(firebase_credentials)
         firebase_admin.initialize_app(cred)
+        print("✅ Firebase inicializado com sucesso usando variáveis de ambiente")
+        
     except FileNotFoundError:
-        print("⚠️  Arquivo firebase_key.json não encontrado. Funcionalidade Firebase desabilitada.")
+        print("⚠️  Arquivo .env não encontrado. Funcionalidade Firebase desabilitada.")
+    except ValueError as e:
+        print(f"⚠️  Erro nas credenciais Firebase: {e}")
     except Exception as e:
         print(f"⚠️  Erro ao inicializar Firebase: {e}") 
 
