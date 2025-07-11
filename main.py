@@ -61,7 +61,7 @@ if st.session_state.get('autenticado', False):
             'autenticado', 'usuario', 'usuario_nome', 'login_sucesso',
             'active_tab', 'registration_errors', 'registration_inputs',
             'show_login_after_register', 'mensagem_erro_login',
-            'limpar_senha_login', 'login_email', 'login_senha'
+            'limpar_senha_login', 'login_email', 'login_senha', 'senha_counter'
         ]
         
         for key in keys_to_clear:

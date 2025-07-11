@@ -201,11 +201,18 @@ def exibir_tela_login_registro():
             with st.form("login_form"):
                 email_login = st.text_input("Selo Mágico", key="login_email")
                 
-                # Campo de senha com controle de limpeza
+                # Campo de senha com controle de limpeza usando contador único
+                if not hasattr(st.session_state, 'senha_counter'):
+                    st.session_state.senha_counter = 0
+                
+                # Incrementa contador quando deve limpar senha
                 if st.session_state.get('limpar_senha_login', False):
-                    senha_login = st.text_input("Palavra-Passe", type="password", key="login_senha_temp", value="")
-                else:
-                    senha_login = st.text_input("Palavra-Passe", type="password", key="login_senha")
+                    st.session_state.senha_counter += 1
+                    st.session_state.limpar_senha_login = False
+                
+                # Cria key única para forçar limpeza do campo
+                senha_key = f"login_senha_{st.session_state.senha_counter}"
+                senha_login = st.text_input("Palavra-Passe", type="password", key=senha_key)
                 
                 # Botão sempre habilitado no formulário
                 enviar_login = st.form_submit_button("Entrar")
@@ -218,10 +225,6 @@ def exibir_tela_login_registro():
                     # Limpa mensagens de erro anteriores
                     if 'mensagem_erro_login' in st.session_state:
                         del st.session_state.mensagem_erro_login
-                    
-                    # Reseta flag de limpeza se existir
-                    if st.session_state.get('limpar_senha_login', False):
-                        st.session_state.limpar_senha_login = False
                     # Validação de campos vazios
                     if not email_login.strip() or not senha_login.strip():
                         st.session_state.mensagem_erro_login = "Por favor, complete o pergaminho antes de prosseguir, jovem aprendiz."
@@ -254,7 +257,10 @@ def exibir_tela_login_registro():
                                     'registration_inputs', 
                                     'show_login_after_register',
                                     'login_email', # Limpa o campo de email do login
-                                    'login_senha'  # Limpa o campo de senha do login
+                                    'login_senha',  # Limpa o campo de senha do login
+                                    'senha_counter', # Limpa o contador de senha
+                                    'limpar_senha_login', # Limpa a flag de limpeza
+                                    'mensagem_erro_login' # Limpa mensagens de erro
                                 ]
                                 for key in keys_to_delete:
                                     if key in st.session_state:
