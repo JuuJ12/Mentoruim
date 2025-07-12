@@ -225,6 +225,7 @@ def exibir_tela_login_registro():
                     # Limpa mensagens de erro anteriores
                     if 'mensagem_erro_login' in st.session_state:
                         del st.session_state.mensagem_erro_login
+                    
                     # Validação de campos vazios
                     if not email_login.strip() or not senha_login.strip():
                         st.session_state.mensagem_erro_login = "Por favor, complete o pergaminho antes de prosseguir, jovem aprendiz."
@@ -235,6 +236,11 @@ def exibir_tela_login_registro():
                         if not email_valido:
                             st.session_state.mensagem_erro_login = "Este selo mágico não é reconhecido. Use o formato: aprendiz@reino.com"
                             st.rerun()
+                        # Validação do comprimento da senha
+                        elif len(senha_login.strip()) < MIN_PASSWORD_LENGTH:
+                            st.session_state.mensagem_erro_login = f"A Palavra-Passe deve conter pelo menos {MIN_PASSWORD_LENGTH} runas mágicas."
+                            st.session_state.limpar_senha_login = True
+                            st.rerun()
                         else:
                             with st.spinner("Verificando suas credenciais arcanas..."):
                                 # Chama a função de login que agora usa o Firebase
@@ -244,7 +250,7 @@ def exibir_tela_login_registro():
                                     # Mostra spinner de carregamento pós-login
                                     time.sleep(1)  # Pequena pausa para melhor experiência
                                     
-                            if email_valido and autenticado:
+                            if autenticado:
                                 with st.spinner("Bem-vindo ao Mentorium! Preparando sua jornada..."):
                                     time.sleep(2)  # Simula carregamento da aplicação
                                     
@@ -266,7 +272,7 @@ def exibir_tela_login_registro():
                                     if key in st.session_state:
                                         del st.session_state[key]
                                 st.rerun()
-                            elif email_valido and not autenticado:
+                            else:
                                 # Define flag para limpar campo de senha na próxima execução
                                 st.session_state.limpar_senha_login = True
                                 # Armazena a mensagem de erro para exibir
