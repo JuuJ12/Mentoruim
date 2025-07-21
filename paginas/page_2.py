@@ -8,7 +8,7 @@ from Agents.conselho_dos_magos import chat
 from Agents.conselho_dos_magos import respostass
 
 # Configurar imagem de fundo
-image_url = "https://i.postimg.cc/jq1JFnR0/Gemini-Generated-Image-a19k06a19k06a19k.png"
+image_url = "https://i.ibb.co/twSn0cFx/mage.png"
 
 page_bg_img = f"""
 <style>
