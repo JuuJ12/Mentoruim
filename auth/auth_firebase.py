@@ -1,5 +1,5 @@
-import pyrebase 
 import os
+import requests
 from dotenv import load_dotenv
 import firebase_admin
 from firebase_admin import credentials, firestore
@@ -15,6 +15,22 @@ firebaseConfig = {
     'appId': os.getenv("APP_ID"),
     'measurementId': os.getenv("MEASUREMENT_ID")
 }
+
+
+def _firebase_auth_request(endpoint: str, payload: dict) -> dict:
+    api_key = firebaseConfig.get("apiKey")
+    if not api_key:
+        raise ValueError("FIREBASE_API_KEY não configurada no arquivo .env")
+
+    url = f"https://identitytoolkit.googleapis.com/v1/{endpoint}?key={api_key}"
+    response = requests.post(url, json=payload, timeout=15)
+    data = response.json() if response.content else {}
+
+    if response.ok:
+        return data
+
+    error_code = data.get("error", {}).get("message", "UNKNOWN_ERROR")
+    raise ValueError(error_code)
 
 if not firebase_admin._apps:
     try:
@@ -49,15 +65,20 @@ if not firebase_admin._apps:
 
 def cadastro(email: str, senha: str, nome: str) -> tuple[bool, str]:
     """
-    Cadastra um novo usuário no Firebase Authentication usando Pyrebase.
+    Cadastra um novo usuário no Firebase Authentication usando API REST.
     Salva também o nome do usuário no Firestore.
     Retorna True e uma mensagem de sucesso em caso de sucesso,
     ou False e uma mensagem de erro.
     """
-    firebase = pyrebase.initialize_app(firebaseConfig)
-    auth = firebase.auth()
     try:
-        user = auth.create_user_with_email_and_password(email, senha)
+        _firebase_auth_request(
+            "accounts:signUp",
+            {
+                "email": email,
+                "password": senha,
+                "returnSecureToken": True,
+            },
+        )
         # Salva o nome no Firestore
         db = firestore.client()
         db.collection("users").document(email).set({"nome": nome, "email": email})
@@ -76,14 +97,19 @@ def cadastro(email: str, senha: str, nome: str) -> tuple[bool, str]:
 
 def login(email: str, senha: str) -> tuple[bool, str | None]:
     """
-    Tenta autenticar um usuário no Firebase usando Pyrebase.
+    Tenta autenticar um usuário no Firebase usando API REST.
     Retorna True e o email do usuário em caso de sucesso,
     ou False e None (ou uma mensagem de erro).
     """
-    firebase = pyrebase.initialize_app(firebaseConfig)
-    auth = firebase.auth()
     try:
-        user_info = auth.sign_in_with_email_and_password(email, senha)
+        _firebase_auth_request(
+            "accounts:signInWithPassword",
+            {
+                "email": email,
+                "password": senha,
+                "returnSecureToken": True,
+            },
+        )
         return True, email
     except Exception as e:
         error_message = str(e)
@@ -100,10 +126,14 @@ def recuperar_senha(email: str) -> tuple[bool, str]:
     Retorna True e uma mensagem de sucesso em caso de sucesso,
     ou False e uma mensagem de erro.
     """
-    firebase = pyrebase.initialize_app(firebaseConfig)
-    auth = firebase.auth()
     try:
-        auth.send_password_reset_email(email)
+        _firebase_auth_request(
+            "accounts:sendOobCode",
+            {
+                "requestType": "PASSWORD_RESET",
+                "email": email,
+            },
+        )
         return True, "E-mail de recuperação enviado com sucesso!"
     except Exception as e:
         error_message = str(e)
@@ -112,5 +142,3 @@ def recuperar_senha(email: str) -> tuple[bool, str]:
         else:
             print(f"Erro inesperado ao enviar e-mail de recuperação: {e}")
             return False, f"Ocorreu um erro arcano ao tentar enviar o e-mail: {error_message}"
-
-print(cadastro('exemplos@dominio.com', 'senha123', 'Nome do Usuário'))
