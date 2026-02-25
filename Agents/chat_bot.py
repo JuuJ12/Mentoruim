@@ -8,61 +8,6 @@ from firebase_admin import credentials, firestore
 
 load_dotenv()
 
-image_url = "https://i.ibb.co/2YnBdkzF/Gemini-Generated-Image-zbzj3kzbzj3kzbzj.png"
-
-page_bg_img = f"""
-<style>
-.stApp {{
-    background-image: url("{image_url}");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    color: #000000;
-}}
-h1 {{
-    color: #1C1C1C !important;
-}}
-body, .stApp, .stMarkdown, .stChatFloatingInputContainer {{
-    color: #000000 !important;
-}}
-/* Remove fundo da barra superior */
-header, [data-testid="stHeader"], [data-testid="stToolbar"] {{
-    background: rgba(0,0,0,0);
-}}
-
-/* Remove fundo da barra inferior */
-.st-emotion-cache-128upt6 {{
-    background: rgba(0,0,0,0) !important;
-}}
-
-/* Container da entrada de texto */
-.stChatInputContainer {{
-    background-color: rgba(0, 0, 0, 0.0) !important;
-}}
-
-/* Campo de texto */
-.stTextInput > div > div > input {{
-    background-color: rgba(255, 255, 255, 0.8);
-    border: none;
-    border-radius: 10px;
-    padding: 10px;
-}}
-
-/* Centralizar o conteúdo */
-[data-testid="stAppViewContainer"] > .main {{
-    display: flex;
-    justify-content: center;
-}}
-
-.block-container {{
-    max-width: 800px;
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-}}
-</style>
-"""
-
 llamaChatModel = ChatGroq(
     model="llama-3.3-70b-versatile",
     api_key=os.getenv("GROQ_API_KEY"),
@@ -82,8 +27,7 @@ def carregar_mensagens_chat(email):
         return []
     
 def chat_bot():
-    st.markdown(page_bg_img, unsafe_allow_html=True)
-    st.title("Chatbot dos Magos 🧙‍♂️")
+    st.title("Chatbot")
 
     email_usuario = st.session_state.get("usuario")  # ou "usuario_nome" se preferir
 

@@ -8,71 +8,11 @@ from Agents.conselho_dos_magos import chat
 from Agents.conselho_dos_magos import respostass
 
 # Configurar imagem de fundo
-image_url = "https://i.ibb.co/twSn0cFx/mage.png"
 
-page_bg_img = f"""
-<style>
-p {{
-    color: #FFFFFF !important;
-}}
-.stApp {{
-    background-image: url("{image_url}");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    color: #FFFFFF;
-}}
-/* Aplicar cores brancas apenas ao conteúdo principal */
-.main h1 {{
-    color: #FFFFFF !important;
-}}
-.main h2 {{
-    color: #FFFFFF !important;
-}}
-.main h3 {{
-    color: #FFFFFF !important;
-}}
-.main .stMarkdown {{
-    color: #FFFFFF !important;
-}}
-/* Texto em geral apenas na área principal */
-.main p, .main div, .main span, .main .stWrite {{
-    color: #FFFFFF !important;
-}}
-/* Label do campo de texto */
-.main .stTextInput > label {{
-    color: #FFFFFF !important;
-}}
-/* Remove fundo da barra superior */
-header, [data-testid="stHeader"], [data-testid="stToolbar"] {{
-    background: rgba(0,0,0,0);
-}}
-/* Remove fundo da barra inferior */
-.st-emotion-cache-128upt6 {{
-    background: rgba(0,0,0,0) !important;
-}}
-/* Container da entrada de texto */
-.stChatInputContainer {{
-    background-color: rgba(0, 0, 0, 0.0) !important;
-}}
-/* Campo de texto */
-.stTextInput > div > div > input {{
-    background-color: rgba(255, 255, 255, 0.8);
-    border: none;
-    border-radius: 10px;
-    padding: 10px;
-    color: #000000;
-}}
-</style>
-"""
 
-st.markdown(page_bg_img, unsafe_allow_html=True)
-
-st.title('Alto Conselho do Mentorium')
+st.title('titulo')
 st.write('''
-    O Alto Conselho do Mentorium é um grupo de mentores experientes e sábios que se reúnem para discutir e orientar os usuários em suas jornadas de aprendizado e desenvolvimento. Eles são os guardiões do conhecimento e da sabedoria, e estão sempre prontos para ajudar aqueles que buscam crescer e evoluir.
-         
+   descrição de algo  
 ''')
 
 
@@ -97,35 +37,20 @@ if button:
     st.session_state.respostas_mago2 = []
     st.session_state.respostas_mago3 = []
 
-    # Carregar as imagens dos magos
-    try:
-        img_mago1 = Image.open("pictures/mago4.png")
-        img_mago2 = Image.open("pictures/mago2.png")
-        img_mago3 = Image.open("pictures/mago3.png")
-    except FileNotFoundError:
-        st.error("Imagens dos magos não encontradas!")
-        img_mago1 = img_mago2 = img_mago3 = None
-
     # Criar 3 colunas para os magos
     col1, col2, col3 = st.columns(3)
     
     # Configurar as colunas com imagens e títulos
     with col1:
         st.subheader("🔮 Feiticeiro")
-        if img_mago1:
-            st.image(img_mago1, width=150)
         placeholder_mago1 = st.empty()
         
     with col2:
         st.subheader("📚 Wizard")
-        if img_mago2:
-            st.image(img_mago2, width=150)
         placeholder_mago2 = st.empty()
         
     with col3:
         st.subheader("🌙 Bruxo")
-        if img_mago3:
-            st.image(img_mago3, width=150)
         placeholder_mago3 = st.empty()
 
     with st.spinner('Aguarde um momento, os agentes estão batendo um papo 🗣...'):
@@ -162,33 +87,18 @@ if ('respostas_mago1' in st.session_state and st.session_state.respostas_mago1) 
     
     with col1:
         st.subheader("🔮 Feiticeiro")
-        try:
-            img_mago1 = Image.open("pictures/mago4.png")
-            st.image(img_mago1, width=150)
-        except FileNotFoundError:
-            pass
         if 'respostas_mago1' in st.session_state:
             for resposta in st.session_state.respostas_mago1:
                 st.write(resposta)
                 
     with col2:
         st.subheader("📚 Wizard")
-        try:
-            img_mago2 = Image.open("pictures/mago2.png")
-            st.image(img_mago2, width=150)
-        except FileNotFoundError:
-            pass
         if 'respostas_mago2' in st.session_state:
             for resposta in st.session_state.respostas_mago2:
                 st.write(resposta)
                 
     with col3:
         st.subheader("🌙 Bruxo")
-        try:
-            img_mago3 = Image.open("pictures/mago3.png")
-            st.image(img_mago3, width=150)
-        except FileNotFoundError:
-            pass
         if 'respostas_mago3' in st.session_state:
             for resposta in st.session_state.respostas_mago3:
                 st.write(resposta)
